@@ -22,11 +22,15 @@ def tcp_scan(host, ports, numOpened, numClosed):
                 tcp.close() 
                 numOpened += 1  
             else:
+                closedPortList.append(port)
                 numClosed += 1   
         except Exception:
             pass
     print("\nOpened ports in TCP: ")
     for port in openPortList:
+        print(port, socket.getservbyport(port, "tcp"))
+    print("\nClosed ports in TCP: ")
+    for port in closedPortList:
         print(port, socket.getservbyport(port, "tcp"))
     print()
     print(numOpened, "ports are opened")
@@ -47,8 +51,8 @@ def udp_scan(host, ports, numOpened, numClosed, numUncertain):
             udp.send(b'Sample UDP packet')
             data, addr = udp.recvfrom(1024)
             # add to open port list 
-            #print( f"[+] UDP Port Open: {port} , {data} ")
-            openPortList.append(str(port) + ", " + data)
+            print( f"[+] UDP Port Open: {port} , {data} ")
+            openPortList.append(str(port) + ", " + str(data))
             numOpened += 1
         except TimeoutError:
             # uncertain
@@ -58,10 +62,14 @@ def udp_scan(host, ports, numOpened, numClosed, numUncertain):
         except:
             # confirm close
             #print(f"[+] UDP Port Closed:{port}")
+            closedPortList.append(port)
             numClosed += 1
     print("\nOpened ports in UDP: ")
     for port in openPortList:
         print(port)
+    print("\nClosed ports in UDP: ")
+    for port in closedPortList:
+        print(port) 
     print("\nUncertain ports in UDP: ")
     for port in uncertainPortList:
         print(port)
@@ -101,6 +109,7 @@ if __name__ == '__main__':
     host = args.t # target host
     ports = args.p # list of ports
     openPortList = []
+    closedPortList = []
     uncertainPortList = []
     numOpened = 0
     numClosed = 0
