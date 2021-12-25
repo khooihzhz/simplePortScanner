@@ -7,7 +7,7 @@ import re # part port range
 def banner():
     pass
 
-def tcp_scan(host, ports):
+def tcp_scan(host, ports, numOpened, numClosed):
     # ---- TCP SCAN ---- [X] Passed Test
     for port in ports: 
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,15 +16,24 @@ def tcp_scan(host, ports):
             tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # If port is open, add to list!
             if not tcp.connect_ex((host, port)):
-                print(socket.getservbyport(port, "tcp"))
-                print('[+] %s:%d/TCP Open' % (host, port)) # testing 
-                tcp.close()
-
+                #print(socket.getservbyport(port, "tcp"))
+                #print('[+] %s:%d/TCP Open' % (host, port)) # testing
+                openPortList.append(port)
+                tcp.close() 
+                numOpened += 1  
+            else:
+                numClosed += 1   
         except Exception:
             pass
+    print("\nOpened ports in TCP: ")
+    for port in openPortList:
+        print(port, socket.getservbyport(port, "tcp"))
+    print()
+    print(numOpened, "ports are opened")
+    print(numClosed, "ports are closed\n")
 
 
-def udp_scan(host, ports):
+def udp_scan(host, ports, numOpened, numClosed, numUncertain):
     # ---- UDP SCAN ----
     for port in ports:
         # create socket
@@ -38,14 +47,29 @@ def udp_scan(host, ports):
             udp.send(b'Sample UDP packet')
             data, addr = udp.recvfrom(1024)
             # add to open port list 
-            print( f"[+] UDP Port Open: {port} , {data} ")
-
+            #print( f"[+] UDP Port Open: {port} , {data} ")
+            openPortList.append(str(port) + ", " + data)
+            numOpened += 1
         except TimeoutError:
             # uncertain
-            print(f"[+] UDP Port Open:{port} kinda no response or something") # might be open/closed
+            #print(f"[+] UDP Port Open:{port} kinda no response or something") # might be open/closed
+            uncertainPortList.append(port)
+            numUncertain += 1
         except:
             # confirm close
-            print(f"[+] UDP Port Closed:{port}")
+            #print(f"[+] UDP Port Closed:{port}")
+            numClosed += 1
+    print("\nOpened ports in UDP: ")
+    for port in openPortList:
+        print(port)
+    print("\nUncertain ports in UDP: ")
+    for port in uncertainPortList:
+        print(port)
+    print()
+    print(numOpened, "ports are opened")
+    print(numClosed, "ports are closed")
+    print(numUncertain, "ports are uncertain whether it is opened or closed\n")
+
 
 def parseNumList(string):
     # match string 1-65535
@@ -76,10 +100,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
     host = args.t # target host
     ports = args.p # list of ports
+    openPortList = []
+    uncertainPortList = []
+    numOpened = 0
+    numClosed = 0
+    numUncertain = 0
     
     if args.mode == 'tcp':
         # run tcp scan
-        tcp_scan(host, ports)
+        tcp_scan(host, ports, numOpened, numClosed)
     else:
         # run udp scan
-        udp_scan(host, ports)
+        udp_scan(host, ports, numOpened, numClosed, numUncertain)
