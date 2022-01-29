@@ -25,7 +25,7 @@ def tcp_scan(host, ports):
 
 
 def udp_scan(host, ports):
-    # ---- UDP SCAN ----
+    # ---- UDP SCAN ---- [X] Passed Test
     for port in ports:
         # create socket
         try:
