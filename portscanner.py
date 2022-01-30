@@ -3,11 +3,13 @@ import sys # access system variables
 import argparse # library to make arguments easy
 import re # part port range
 
-# todo: make a banner for our port scanner
 def banner():
-    pass
+    print('------PORT SCANNER v0.01------')
+    print('||||||||||||||||||||||||||||||')
+    print('This is a simple port scanner that can check TCP and UDP ports')
 
 def tcp_scan(host, ports):
+    print('------STARTING TCP SCAN------')
     # ---- TCP SCAN ---- [X] Passed Test
     for port in ports: 
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -21,13 +23,14 @@ def tcp_scan(host, ports):
                 openPortList.append(str(port) + " " + str(socket.getservbyport(port, "tcp")))
                 tcp.close() 
             else:
-                closedPortList.append(port)
+                closedPortList.append(str(port))
         except Exception:
             pass
     printPort('TCP')
 
 
 def udp_scan(host, ports):
+    print('------STARTING UDP SCAN------')
     # ---- UDP SCAN ----
     for port in ports:
         # create socket
@@ -40,17 +43,15 @@ def udp_scan(host, ports):
             udp.connect((host, port))
             udp.send(b'Sample UDP packet')
             data, addr = udp.recvfrom(1024)
-            # add to open port list 
-            #print( f"[+] UDP Port Open: {port} , {data} ")
-            openPortList.append(str(port) + ", " + str(data))
+            openPortList.append(str(port) + ", " + str(data.decode()))
         except TimeoutError:
             # uncertain
             #print(f"[+] UDP Port Open:{port} kinda no response or something") # might be open/closed
-            uncertainPortList.append(port)
+            uncertainPortList.append(str(port))
         except:
             # confirm close
             #print(f"[+] UDP Port Closed:{port}")
-            closedPortList.append(port)
+            closedPortList.append(str(port))
     printPort('UDP')
     
 
@@ -78,6 +79,7 @@ def printPort(mode):
     print(f"{len(closedPortList)} ports are closed\n")
     
 if __name__ == '__main__':
+    banner()
     # arguments here
     parser = argparse.ArgumentParser(description='Port Scanner v1.0')
     parser.add_argument('-t', metavar="TARGET", type=str, help='target host')
