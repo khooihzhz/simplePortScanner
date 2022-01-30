@@ -5,14 +5,12 @@ import re # part port range
 
 def banner():
     print('------PORT SCANNER v0.01------')
-    print('||||||||||||||||||||||||||||||')
-    print('This is a simple port scanner that can check TCP and UDP ports')
+    print('This is a simple port scanner that can check TCP and UDP ports\n\n')
 
 def tcp_scan(host, ports):
     print('------STARTING TCP SCAN------')
     # ---- TCP SCAN ---- [X] Passed Test
     for port in ports: 
-        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try: 
             # Create a new socket
             tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -59,7 +57,7 @@ def udp_scan(host, ports):
 def parseNumList(string):
     # match string 1-65535
     m = re.match(r'(\d+)(?:-(\d+))?$', string)
-    # ^ (or use .split('-'). anyway you like.)
+    # ^ (or use .split('-').
     if not m:
         raise argparse.ArgumentTypeError("'" + string + "' is not a range of number. Expected forms like '0-65535' or '80'.")
     start = m.group(1)
@@ -78,7 +76,9 @@ def printPort(mode):
     print(f"{len(openPortList)} ports are opened")
     print(f"{len(closedPortList)} ports are closed\n")
     
+
 if __name__ == '__main__':
+    # print banner
     banner()
     # arguments here
     parser = argparse.ArgumentParser(description='Port Scanner v1.0')
