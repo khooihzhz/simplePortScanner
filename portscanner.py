@@ -16,8 +16,6 @@ def tcp_scan(host, ports):
             tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # If port is open, add to list!
             if not tcp.connect_ex((host, port)):
-                #print(socket.getservbyport(port, "tcp"))
-                #print('[+] %s:%d/TCP Open' % (host, port)) # testing
                 openPortList.append(str(port) + " " + str(socket.getservbyport(port, "tcp")))
                 tcp.close() 
             else:
@@ -58,7 +56,6 @@ def udp_scan(host, ports):
 def parseNumList(string):
     # match string 1-65535
     m = re.match(r'(\d+)(?:-(\d+))?$', string)
-    # ^ (or use .split('-'). anyway you like.)
     if not m:
         raise argparse.ArgumentTypeError("'" + string + "' is not a range of number. Expected forms like '0-65535' or '80'.")
     start = m.group(1)
@@ -76,6 +73,7 @@ def printPort(mode):
         print(f"{len(uncertainPortList)} ports are uncertain whether it is opened or closed")
     print(f"{len(openPortList)} ports are opened")
     print(f"{len(closedPortList)} ports are closed\n")
+
     
 if __name__ == '__main__':
     # arguments here
